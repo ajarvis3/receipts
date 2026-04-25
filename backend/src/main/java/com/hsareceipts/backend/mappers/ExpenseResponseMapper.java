@@ -1,4 +1,4 @@
-package com.hsareceipts.backend.web;
+package com.hsareceipts.backend.mappers;
 
 import com.hsareceipts.backend.domain.Expense;
 import com.hsareceipts.backend.dto.ExpenseResponse;
@@ -8,7 +8,7 @@ public final class ExpenseResponseMapper {
     private ExpenseResponseMapper() {
     }
 
-    public static ExpenseResponse from(Expense expense) {
+    public static ExpenseResponse toResponse(Expense expense) {
         return new ExpenseResponse(
                 expense.getId(),
                 expense.getAmount(),
