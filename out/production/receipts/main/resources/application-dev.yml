@@ -31,7 +31,7 @@ app:
    cors:
       allowed-origins: ${APP_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
    storage:
-      receipts-dir: /app/receipts
+      receipts: /app/receipts
 
 management:
    endpoints:

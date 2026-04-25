@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
-import { useAuth } from '../auth/AuthContext';
+import { useMemo } from "react";
+import { useAuth } from "../auth/AuthContext";
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? '/api';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "/api";
 
-export type ExpenseCategory = 'MEDICAL' | 'DENTAL' | 'VISION' | 'PHARMACY';
+export type ExpenseCategory = "MEDICAL" | "DENTAL" | "VISION" | "PHARMACY";
 
 export type Expense = {
    id: string;
@@ -30,21 +30,26 @@ export type Expense = {
    claimNumber?: string | null;
 };
 
-export type ExpenseFormValues = Omit<Expense, 'id'>;
+export type ExpenseFormValues = Omit<Expense, "id">;
 
 async function request<T>(
    path: string,
    token: string | null,
    init?: RequestInit,
 ): Promise<T> {
-   const response = await fetch(`${apiBaseUrl}${path.startsWith('/api') ? path.slice(4) : path}`, {
-      ...init,
-      headers: {
-         'Content-Type': 'application/json',
-         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-         ...(init?.headers ?? {}),
+   const isFormData = init?.body instanceof FormData;
+
+   const response = await fetch(
+      `${apiBaseUrl}${path.startsWith("/api") ? path.slice(4) : path}`,
+      {
+         ...init,
+         headers: {
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(init?.headers ?? {}),
+         },
       },
-   });
+   );
 
    if (!response.ok) {
       const message = await response.text();
@@ -66,25 +71,36 @@ export function useExpensesApi() {
          ) => {
             const params = new URLSearchParams();
             for (const [key, value] of Object.entries(query)) {
-               if (value !== undefined && value !== '') {
+               if (value !== undefined && value !== "") {
                   params.set(key, String(value));
                }
             }
-            const suffix = params.toString() ? `?${params.toString()}` : '';
+            const suffix = params.toString() ? `?${params.toString()}` : "";
             return request<Expense[]>(`/api/expenses${suffix}`, token);
          },
          getExpense: (id: string) =>
             request<Expense>(`/api/expenses/${id}`, token),
          createExpense: (payload: ExpenseFormValues) =>
-            request<Expense>('/api/expenses', token, {
-               method: 'POST',
+            request<Expense>("/api/expenses", token, {
+               method: "POST",
                body: JSON.stringify(payload),
             }),
          updateExpense: (id: string, payload: ExpenseFormValues) =>
             request<Expense>(`/api/expenses/${id}`, token, {
-               method: 'PUT',
+               method: "PUT",
                body: JSON.stringify(payload),
             }),
+         uploadReceipt: (expenseId: string, file: File) => {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            return request(`/api/expenses/${expenseId}/receipts`, token, {
+               method: "POST",
+               body: formData,
+            });
+         },
+         listReceipts: (expenseId: string) =>
+            request(`/api/expenses/${expenseId}/receipts`, token),
       }),
       [token],
    );

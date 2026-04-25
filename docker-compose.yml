@@ -71,6 +71,8 @@ services:
             condition: service_healthy
       ports:
          - "8080:8080"
+      volumes:
+         - receipts_data:/app/receipts
 
    frontend:
       build:
@@ -90,3 +92,4 @@ services:
 volumes:
    mysql_data:
    keycloak_data:
+   receipts_data:
