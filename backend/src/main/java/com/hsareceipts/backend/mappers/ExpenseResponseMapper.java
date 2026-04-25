@@ -2,7 +2,11 @@ package com.hsareceipts.backend.mappers;
 
 import com.hsareceipts.backend.domain.Expense;
 import com.hsareceipts.backend.dto.ExpenseResponse;
+import org.springframework.stereotype.Component;
 
+import java.util.List;
+
+@Component
 public final class ExpenseResponseMapper {
 
     private ExpenseResponseMapper() {
@@ -35,6 +39,12 @@ public final class ExpenseResponseMapper {
                 expense.getCreatedAt(),
                 expense.getUpdatedAt()
         );
+    }
+
+    public static List<ExpenseResponse> toResponseList(List<Expense> expenses) {
+        return expenses.stream()
+                .map(ExpenseResponseMapper::toResponse)
+                .toList();
     }
 }
 

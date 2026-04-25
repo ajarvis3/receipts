@@ -3,16 +3,25 @@ package com.hsareceipts.backend.service;
 import com.hsareceipts.backend.domain.Expense;
 import com.hsareceipts.backend.dto.ExpenseRequest;
 import com.hsareceipts.backend.dto.ExpenseSearchRequest;
+import com.hsareceipts.backend.exceptions.CSVIOException;
+import com.hsareceipts.backend.mappers.CsvToExpenseRequestMapper;
 import com.hsareceipts.backend.repository.ExpenseRepository;
 import com.hsareceipts.backend.repository.ExpenseSpecifications;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.*;
+
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -21,8 +30,11 @@ public class ExpenseService {
 
     private final ExpenseRepository expenseRepository;
 
-    public ExpenseService(ExpenseRepository expenseRepository) {
+    private final CsvToExpenseRequestMapper csvToExpenseRequestMapper;
+
+    public ExpenseService(ExpenseRepository expenseRepository, CsvToExpenseRequestMapper csvToExpenseRequestMapper) {
         this.expenseRepository = expenseRepository;
+        this.csvToExpenseRequestMapper = csvToExpenseRequestMapper;
     }
 
     public List<Expense> listExpenses(Authentication authentication, ExpenseSearchRequest searchRequest) {
@@ -57,6 +69,29 @@ public class ExpenseService {
         requireOwnership(authentication, expense);
         apply(expense, request);
         return expenseRepository.save(expense);
+    }
+
+    public List<Expense> uploadExpenses(Authentication authentication, MultipartFile file) {
+        try (Reader reader = new InputStreamReader(file.getInputStream());
+             CSVParser parser = CSVFormat.DEFAULT
+                     .builder()
+                     .setHeader()                 // uses first row as header
+                     .setSkipHeaderRecord(true)   // do NOT return the header as a record
+                     .setIgnoreEmptyLines(true)
+                     .setTrim(true).get()
+                     .parse(reader)) {
+
+            List<Expense> rows = new ArrayList<>();
+
+            for (CSVRecord record : parser) {
+                ExpenseRequest request = csvToExpenseRequestMapper.mapCsvRecordToExpenseRequest(record);
+                rows.add(createExpense(authentication, request));
+            }
+
+            return rows;
+        } catch (IOException e) {
+            throw new CSVIOException("Failed to read CSV file: " + e.getMessage(), e);
+        }
     }
 
     private Expense requireOwnership(Authentication authentication, Expense expense) {

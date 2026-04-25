@@ -23,6 +23,17 @@ public class ReceiptExceptionHandler {
                 .body(body);
     }
 
+    @ExceptionHandler(CSVIOException.class)
+    public ResponseEntity<Map<String, Object>> handleReceiptStorage(CSVIOException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("error", "csv_io_failed");
+        body.put("message", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(body);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(EntityNotFoundException ex) {
         Map<String, Object> body = new HashMap<>();

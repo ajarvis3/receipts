@@ -87,6 +87,11 @@ public class ExpenseController {
         return ExpenseResponseMapper.toResponse(expenseService.createExpense(authentication, request));
     }
 
+    @PostMapping
+    public List<ExpenseResponse> create(Authentication authentication, @RequestParam("file") MultipartFile file) {
+        return ExpenseResponseMapper.toResponseList(expenseService.uploadExpenses(authentication, file));
+    }
+
     @PostMapping("/{expenseId}/receipts")
     public ReceiptResponse uploadReceipt(@PathVariable String expenseId, @RequestParam("file") MultipartFile file) {
         ReceiptUploadRequest req = new ReceiptUploadRequest(expenseId, file);
