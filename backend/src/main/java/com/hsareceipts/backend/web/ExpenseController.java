@@ -71,18 +71,6 @@ public class ExpenseController {
                 .toList();
     }
 
-    @PostMapping
-    public ExpenseResponse create(Authentication authentication, @Valid @RequestBody ExpenseRequest request) {
-        return ExpenseResponseMapper.toResponse(expenseService.createExpense(authentication, request));
-    }
-
-    @PostMapping("/{expenseId}/receipts")
-    public ReceiptResponse uploadReceipt(@PathVariable String expenseId, @RequestParam("file") MultipartFile file) {
-        ReceiptUploadRequest req = new ReceiptUploadRequest(expenseId, file);
-        Receipt saved = receiptService.upload(req);
-        return receiptMapper.toResponse(saved);
-    }
-
     @GetMapping("/receipts/{receiptId}")
     public ResponseEntity<Resource> download(@PathVariable String receiptId) {
         Receipt receipt = receiptService.getById(receiptId);
@@ -94,6 +82,17 @@ public class ExpenseController {
                 .body(file);
     }
 
+    @PostMapping
+    public ExpenseResponse create(Authentication authentication, @Valid @RequestBody ExpenseRequest request) {
+        return ExpenseResponseMapper.toResponse(expenseService.createExpense(authentication, request));
+    }
+
+    @PostMapping("/{expenseId}/receipts")
+    public ReceiptResponse uploadReceipt(@PathVariable String expenseId, @RequestParam("file") MultipartFile file) {
+        ReceiptUploadRequest req = new ReceiptUploadRequest(expenseId, file);
+        Receipt saved = receiptService.upload(req);
+        return receiptMapper.toResponse(saved);
+    }
 
     @PutMapping("/{id}")
     public ExpenseResponse update(Authentication authentication, @PathVariable String id, @Valid @RequestBody ExpenseRequest request) {

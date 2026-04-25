@@ -4,6 +4,10 @@ import {
    Button,
    Card,
    CardContent,
+   List,
+   ListItem,
+   ListItemButton,
+   ListItemText,
    MenuItem,
    Stack,
    TextField,
@@ -12,8 +16,10 @@ import {
 import {
    ExpenseCategory,
    ExpenseFormValues,
+   ReceiptMetadata,
    useExpensesApi,
 } from "../api/client";
+import { mapExpenseToForm } from "../utility/mappers.js";
 
 const emptyForm: ExpenseFormValues = {
    amount: "",
@@ -46,37 +52,23 @@ export function ExpenseEditorPage({ mode }: { mode: "create" | "edit" }) {
    const [form, setForm] = useState<ExpenseFormValues>(emptyForm);
    const [error, setError] = useState<string | null>(null);
    const [receiptFiles, setReceiptFiles] = useState<FileList | null>(null);
+   const [receipts, setReceipts] = useState<ReceiptMetadata[]>([]);
 
    useEffect(() => {
       if (mode === "edit" && expenseId) {
-         void api
-            .getExpense(expenseId)
-            .then((expense) =>
-               setForm({
-                  amount: expense.amount,
-                  serviceDate: expense.serviceDate,
-                  merchantProvider: expense.merchantProvider,
-                  recipients: expense.recipients,
-                  expenseCategory: expense.expenseCategory,
-                  status: expense.status,
-                  planName: expense.planName ?? "",
-                  expenseType: expense.expenseType ?? "",
-                  expenseSubType: expense.expenseSubType ?? "",
-                  eobNumber: expense.eobNumber ?? "",
-                  paidAmount: expense.paidAmount ?? "0.00",
-                  deniedAmount: expense.deniedAmount ?? "0.00",
-                  payeeName: expense.payeeName ?? "",
-                  payeeAccountNumber: expense.payeeAccountNumber ?? "",
-                  payeeAddressLine1: expense.payeeAddressLine1 ?? "",
-                  payeeAddressLine2: expense.payeeAddressLine2 ?? "",
-                  payeeCity: expense.payeeCity ?? "",
-                  payeeState: expense.payeeState ?? "",
-                  payeeZipCode: expense.payeeZipCode ?? "",
-                  comment: expense.comment ?? "",
-                  claimNumber: expense.claimNumber ?? "",
-               } satisfies ExpenseFormValues),
-            )
-            .catch((err: Error) => setError(err.message));
+         void (async () => {
+            try {
+               api.getExpense(expenseId).then((expense) =>
+                  setForm(mapExpenseToForm(expense)),
+               );
+
+               api.listReceipts(expenseId).then((receipts) =>
+                  setReceipts(receipts),
+               );
+            } catch (err) {
+               setError((err as Error).message);
+            }
+         })();
       }
    }, [api, expenseId, mode]);
 
@@ -203,6 +195,20 @@ export function ExpenseEditorPage({ mode }: { mode: "create" | "edit" }) {
                />
                <Stack spacing={1}>
                   <Typography variant="subtitle1">Receipts</Typography>
+
+                  <List dense>
+                     {receipts.map((r) => (
+                        <ListItem key={r.id} disablePadding>
+                           <ListItemButton
+                              component="a"
+                              onClick={() => api.getReceipt(r.id)}
+                              target="_blank"
+                           >
+                              <ListItemText primary={r.filename} />
+                           </ListItemButton>
+                        </ListItem>
+                     ))}
+                  </List>
 
                   <Button variant="contained" component="label" color="primary">
                      Upload Receipts

@@ -32,6 +32,11 @@ export type Expense = {
 
 export type ExpenseFormValues = Omit<Expense, "id">;
 
+export type ReceiptMetadata = {
+   id: string;
+   filename: string;
+};
+
 async function request<T>(
    path: string,
    token: string | null,
@@ -59,6 +64,36 @@ async function request<T>(
    }
 
    return response.json() as Promise<T>;
+}
+
+// For receipt return for now.
+async function requestBlob(
+   path: string,
+   token: string | null,
+   init?: RequestInit,
+): Promise<Blob> {
+   const isFormData = init?.body instanceof FormData;
+
+   const response = await fetch(
+      `${apiBaseUrl}${path.startsWith("/api") ? path.slice(4) : path}`,
+      {
+         ...init,
+         headers: {
+            ...(isFormData ? {} : { "Content-Type": "application/json" }),
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...(init?.headers ?? {}),
+         },
+      },
+   );
+
+   if (!response.ok) {
+      const message = await response.text();
+      throw new Error(
+         message || `Request failed with status ${response.status}`,
+      );
+   }
+
+   return response.blob();
 }
 
 export function useExpensesApi() {
@@ -100,7 +135,19 @@ export function useExpensesApi() {
             });
          },
          listReceipts: (expenseId: string) =>
-            request(`/api/expenses/${expenseId}/receipts`, token),
+            request<ReceiptMetadata[]>(
+               `/api/expenses/${expenseId}/receipts`,
+               token,
+            ),
+         getReceipt: async (receiptId: string) => {
+            const blob = await requestBlob(
+               `/api/expenses/receipts/${receiptId}`,
+               token,
+            );
+
+            const url = URL.createObjectURL(blob);
+            window.open(url, "_blank");
+         },
       }),
       [token],
    );
