@@ -1,0 +1,13 @@
+/.idea
+/.vscode
+/.gradle
+/.mvn
+/backend/target
+/frontend/dist
+/frontend/node_modules
+*.log
+.DS_Store
+Thumbs.db
+
+**/build
+**/.gradle
