@@ -120,6 +120,15 @@ export function useExpensesApi() {
                method: "POST",
                body: JSON.stringify(payload),
             }),
+         uploadCsv: (file: File) => {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            return request(`/api/expenses/csv`, token, {
+               method: "POST",
+               body: formData,
+            });
+         },
          updateExpense: (id: string, payload: ExpenseFormValues) =>
             request<Expense>(`/api/expenses/${id}`, token, {
                method: "PUT",
