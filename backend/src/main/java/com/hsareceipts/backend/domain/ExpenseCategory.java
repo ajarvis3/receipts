@@ -4,6 +4,7 @@ public enum ExpenseCategory {
     MEDICAL,
     DENTAL,
     VISION,
-    PHARMACY
+    PHARMACY,
+    UNKNOWN
 }
 

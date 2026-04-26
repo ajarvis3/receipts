@@ -7,14 +7,20 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Component
 public class CsvToExpenseRequestMapper {
 
+    private static final DateTimeFormatter CSV_DATE =
+            DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
     public ExpenseRequest mapCsvRecordToExpenseRequest(CSVRecord r) {
+        LocalDate serviceDate = LocalDate.parse(r.get("Date of service"), CSV_DATE);
+
         return new ExpenseRequest(
                 new BigDecimal(r.get("Amount")),
-                LocalDate.parse(r.get("Date of service")),
+                serviceDate,
                 r.get("Merchant/Provider"),
                 r.get("Recipients"),
                 ExpenseCategory.valueOf(r.get("Expense category").toUpperCase()),

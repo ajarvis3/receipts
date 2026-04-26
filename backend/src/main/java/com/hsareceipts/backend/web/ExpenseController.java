@@ -87,7 +87,7 @@ public class ExpenseController {
         return ExpenseResponseMapper.toResponse(expenseService.createExpense(authentication, request));
     }
 
-    @PostMapping
+    @PostMapping("/csv")
     public List<ExpenseResponse> create(Authentication authentication, @RequestParam("file") MultipartFile file) {
         return ExpenseResponseMapper.toResponseList(expenseService.uploadExpenses(authentication, file));
     }
