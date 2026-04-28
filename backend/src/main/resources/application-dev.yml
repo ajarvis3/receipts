@@ -2,7 +2,7 @@ spring:
    application:
       name: receipts-backend
    datasource:
-      url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/receipts?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8}
+      url: ${SPRING_DATASOURCE_URL:jdbc:mariadb://mariadb:3306/receipts?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8}
       username: ${SPRING_DATASOURCE_USERNAME:receipts}
       password: ${SPRING_DATASOURCE_PASSWORD:receipts}
    jpa:
