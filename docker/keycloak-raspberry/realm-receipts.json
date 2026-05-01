@@ -9,7 +9,7 @@
    "duplicateEmailsAllowed": false,
    "verifyEmail": false,
    "attributes": {
-      "frontendUrl": "http://raspberrypi.local:8081"
+      "frontendUrl": "https://raspberrypi.local:8081"
    },
    "clients": [
       {
@@ -19,7 +19,7 @@
          "publicClient": true,
          "standardFlowEnabled": true,
          "directAccessGrantsEnabled": false,
-         "redirectUris": ["http://raspberrypi.local:3000/*", "http://raspberrypi.local:5173/*"],
+         "redirectUris": ["https://raspberrypi.local:3000/*", "https://raspberrypi.local:5173/*"],
          "webOrigins": ["+"]
       }
    ],
