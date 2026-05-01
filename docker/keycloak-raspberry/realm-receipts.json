@@ -1,0 +1,42 @@
+{
+   "realm": "receipts",
+   "enabled": true,
+   "displayName": "Receipts",
+   "registrationAllowed": true,
+   "registrationEmailAsUsername": true,
+   "rememberMe": true,
+   "loginWithEmailAllowed": true,
+   "duplicateEmailsAllowed": false,
+   "verifyEmail": false,
+   "attributes": {
+      "frontendUrl": "http://raspberrypi.local:8081"
+   },
+   "clients": [
+      {
+         "clientId": "receipts-web",
+         "name": "Receipts Web",
+         "enabled": true,
+         "publicClient": true,
+         "standardFlowEnabled": true,
+         "directAccessGrantsEnabled": false,
+         "redirectUris": ["http://raspberrypi.local:3000/*", "http://raspberrypi.local:5173/*"],
+         "webOrigins": ["+"]
+      }
+   ],
+   "users": [
+      {
+         "username": "demo",
+         "enabled": true,
+         "firstName": "Demo",
+         "lastName": "User",
+         "emailVerified": true,
+         "credentials": [
+            {
+               "type": "password",
+               "value": "demo1234",
+               "temporary": false
+            }
+         ]
+      }
+   ]
+}
