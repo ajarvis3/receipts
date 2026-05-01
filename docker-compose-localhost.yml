@@ -14,15 +14,15 @@ services:
          - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
       healthcheck:
          test:
-            [
-               "CMD",
-               "mysqladmin",
-               "ping",
-               "-h",
-               "127.0.0.1",
-               "-ureceipts",
-               "-preceipts",
-            ]
+           [
+              "CMD",
+              "mysqladmin",
+              "ping",
+              "-h",
+              "127.0.0.1",
+              "-ureceipts",
+              "-preceipts",
+           ]
          interval: 10s
          timeout: 5s
          retries: 10
@@ -49,7 +49,7 @@ services:
          - "8081:8080"
       volumes:
          - keycloak_data:/opt/keycloak/data
-         - ./docker/keycloak:/opt/keycloak/data/import:ro
+         - ./docker/keycloak-localhost:/opt/keycloak/data/import:ro
 
    backend:
       build:
@@ -79,7 +79,7 @@ services:
          context: ./frontend
          args:
             VITE_API_BASE_URL: /api
-            VITE_KEYCLOAK_URL: /
+            VITE_KEYCLOAK_URL: http://localhost:8081
             VITE_KEYCLOAK_REALM: receipts
             VITE_KEYCLOAK_CLIENT_ID: receipts-web
       container_name: receipts-frontend
