@@ -1,5 +1,11 @@
 name: Build and Push to Docker Hub
 
+env:
+  VITE_API_BASE_URL: /api
+  VITE_KEYCLOAK_URL: http://raspberrypi.local:8081
+  VITE_KEYCLOAK_REALM: receipts
+  VITE_KEYCLOAK_CLIENT_ID: receipts-web
+
 on:
   push:
     branches: [ "main" ]
@@ -35,6 +41,18 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/receipts-backend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/receipts-backend:${{ github.sha }}
+          build-args: |
+            SPRING_PROFILES_ACTIVE: dev
+            SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/receipts?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=UTF-8
+            SPRING_DATASOURCE_USERNAME: receipts
+            SPRING_DATASOURCE_PASSWORD: receipts
+            SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: http://keycloak:8080/realms/receipts
+            APP_CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173
+            LOGGING_LEVEL_ROOT: DEBUG
+            LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
+            LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY_OAUTH2: DEBUG
+            LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: DEBUG
+
             
       - name: Build and push frontend
         uses: docker/build-push-action@v5
@@ -46,3 +64,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/receipts-frontend:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/receipts-frontend:${{ github.sha }}
+          build-args: |
+            VITE_API_BASE_URL=${{ env.VITE_API_BASE_URL }}
+            VITE_KEYCLOAK_URL=${{ env.VITE_KEYCLOAK_URL }}
+            VITE_KEYCLOAK_REALM=${{ env.VITE_KEYCLOAK_REALM }}
+            VITE_KEYCLOAK_CLIENT_ID=${{ env.VITE_KEYCLOAK_CLIENT_ID }}
