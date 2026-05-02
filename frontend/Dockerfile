@@ -11,6 +11,7 @@ ENV VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
 COPY package.json ./
 RUN corepack enable && yarn install
 COPY . .
+RUN echo "API URL: $VITE_API_BASE_URL"
 RUN yarn build
 
 FROM nginx:1.27-alpine

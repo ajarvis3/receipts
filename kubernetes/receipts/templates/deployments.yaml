@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: receipts-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: receipts-frontend
+  template:
+    metadata:
+      labels:
+        app: receipts-frontend
+    spec:
+      containers:
+        - name: receipts-frontend
+          image: ajarvis/receipts-frontend:latest
+          ports:
+            - containerPort: 80
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: receipts-backend
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: receipts-backend
+  template:
+    metadata:
+      labels:
+        app: receipts-backend
+    spec:
+      containers:
+        - name: receipts-backend
+          image: ajarvis/receipts-backend:latest
+          ports:
+            - containerPort: 8080
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: receipts-keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: receipts-keycloak
+  template:
+    metadata:
+      labels:
+        app: receipts-keycloak
+    spec:
+      containers:
+        - name: receipts-keycloak
+          image: quay.io/keycloak/keycloak:26.6.1
+          command:
+            - start-dev
+            - --import-realm
+          env:
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              value: "admin"
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              value: "admin"
+
