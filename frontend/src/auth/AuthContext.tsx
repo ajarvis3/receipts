@@ -14,7 +14,7 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 const keycloakConfig = {
-  url: import.meta.env.VITE_KEYCLOAK_URL ?? 'http://localhost:8081',
+  url: import.meta.env.VITE_KEYCLOAK_URL ?? '/auth',
   realm: import.meta.env.VITE_KEYCLOAK_REALM ?? 'receipts',
   clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? 'receipts-web',
 };
