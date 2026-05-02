@@ -153,9 +153,7 @@ export function useExpensesApi() {
                `/api/expenses/receipts/${receiptId}`,
                token,
             );
-
-            const url = URL.createObjectURL(blob);
-            window.open(url, "_blank");
+            return blob;
          },
       }),
       [token],

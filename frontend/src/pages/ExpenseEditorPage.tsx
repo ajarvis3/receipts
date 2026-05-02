@@ -92,6 +92,16 @@ export function ExpenseEditorPage({ mode }: { mode: "create" | "edit" }) {
       }
    };
 
+   const download = async (r: ReceiptMetadata) => {
+      const blob = await api.getReceipt(r.id);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = r.filename;
+      a.click();
+      URL.revokeObjectURL(url);
+   };
+
    return (
       <Card>
          <CardContent>
@@ -201,7 +211,7 @@ export function ExpenseEditorPage({ mode }: { mode: "create" | "edit" }) {
                         <ListItem key={r.id} disablePadding>
                            <ListItemButton
                               component="a"
-                              onClick={() => api.getReceipt(r.id)}
+                              onClick={() => download(r)}
                               target="_blank"
                            >
                               <ListItemText primary={r.filename} />
