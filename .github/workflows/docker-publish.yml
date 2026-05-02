@@ -2,7 +2,7 @@ name: Build and Push to Docker Hub
 
 env:
   VITE_API_BASE_URL: /api
-  VITE_KEYCLOAK_URL: http://raspberrypi.local:8081
+  VITE_KEYCLOAK_URL: /auth
   VITE_KEYCLOAK_REALM: receipts
   VITE_KEYCLOAK_CLIENT_ID: receipts-web
 
